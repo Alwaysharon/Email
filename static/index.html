@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Classifier</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .form-section {
+            background: #f8fafc;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 5px solid #4f46e5;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+            transition: border-color 0.3s ease;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+        }
+
+        .results-section {
+            background: #f0f9ff;
+            padding: 30px;
+            border-radius: 10px;
+            border-left: 5px solid #0ea5e9;
+            margin-top: 30px;
+            display: none;
+        }
+
+        .prediction-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .prediction-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #1f2937;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        .category-hr { background: #ef4444; color: white; }
+        .category-finance { background: #10b981; color: white; }
+        .category-it { background: #3b82f6; color: white; }
+        .category-marketing { background: #f59e0b; color: white; }
+        .category-legal { background: #8b5cf6; color: white; }
+        .category-operations { background: #6b7280; color: white; }
+
+        .confidence-meter {
+            background: #e5e7eb;
+            height: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ef4444 0%, #f59e0b 50%, #10b981 100%);
+            transition: width 0.5s ease;
+        }
+
+        .probabilities {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .prob-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #e5e7eb;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+
+        .prob-item:hover {
+            transform: scale(1.02);
+        }
+
+        .prob-category {
+            font-weight: 600;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .prob-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #4f46e5;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #4f46e5;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .sample-emails {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .sample-email {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s ease;
+        }
+
+        .sample-email:hover {
+            border-color: #4f46e5;
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .probabilities {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Email Classifier</h1>
+            <p>Automatically categorize emails into HR, Finance, IT, Marketing, Legal, and Operations</p>
+        </div>
+
+        <div class="main-content">
+            <div class="form-section">
+                <h2>📧 Email Classification</h2>
+                
+                <div class="form-group">
+                    <label for="emailText">Enter Email Text:</label>
+                    <textarea id="emailText" placeholder="Paste your email content here..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="modelSelect">Choose ML Model:</label>
+                    <select id="modelSelect">
+                        <option value="naive_bayes">Naive Bayes (Recommended)</option>
+                        <option value="random_forest">Random Forest</option>
+                        <option value="svm">Support Vector Machine</option>
+                    </select>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary" onclick="classifyEmail()">🔍 Classify Email</button>
+                    <button class="btn-secondary" onclick="clearForm()">🗑️ Clear</button>
+                </div>
+
+                <div class="sample-emails">
+                    <h3>📝 Try Sample Emails:</h3>
+                    <div class="sample-email" onclick="loadSample(this)">
+                        "Please review the quarterly budget report and approve the marketing expenses for Q4."
+                    </div>
+                    <div class="sample-email" onclick="loadSample(this)">
+                        "System maintenance scheduled for tonight. Email services may be temporarily unavailable."
+                    </div>
+                    <div class="sample-email" onclick="loadSample(this)">
+                        "New employee orientation will be conducted Monday at 9 AM in conference room A."
+                    </div>
+                    <div class="sample-email" onclick="loadSample(this)">
+                        "Contract review completed. Minor revisions suggested in section 4.2 before signing."
+                    </div>
+                    <div class="sample-email" onclick="loadSample(this)">
+                        "Inventory levels are running low. Please reorder office supplies by end of week."
+                    </div>
+                </div>
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Classifying email...</p>
+            </div>
+
+            <div class="error" id="error"></div>
+
+            <div class="results-section" id="results">
+                <div class="prediction-card">
+                    <div class="prediction-title">🎯 Classification Result</div>
+                    <div id="categoryBadge" class="category-badge"></div>
+                    <div>
+                        <strong>Confidence Level:</strong>
+                        <div class="confidence-meter">
+                            <div class="confidence-fill" id="confidenceFill"></div>
+                        </div>
+                        <span id="confidenceText">0%</span>
+                    </div>
+                </div>
+
+                <div class="prediction-card">
+                    <div class="prediction-title">📊 All Category Probabilities</div>
+                    <div class="probabilities" id="probabilities"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function loadSample(element) {
+            document.getElementById('emailText').value = element.textContent.trim().replace(/"/g, '');
+        }
+
+        function clearForm() {
+            document.getElementById('emailText').value = '';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+        }
+
+        async function classifyEmail() {
+            const emailText = document.getElementById('emailText').value.trim();
+            const model = document.getElementById('modelSelect').value;
+
+            if (!emailText) {
+                showError('Please enter some email text to classify.');
+                return;
+            }
+
+            showLoading(true);
+            hideError();
+            hideResults();
+
+            try {
+                const response = await fetch('/classify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email_text: emailText,
+                        model: model
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Classification failed');
+                }
+
+                displayResults(data);
+            } catch (error) {
+                showError('Error: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function displayResults(data) {
+            const { prediction, probabilities, confidence } = data;
+
+            // Update category badge
+            const categoryBadge = document.getElementById('categoryBadge');
+            categoryBadge.textContent = prediction.toUpperCase();
+            categoryBadge.className = `category-badge category-${prediction.toLowerCase()}`;
+
+            // Update confidence meter
+            const confidencePercent = Math.round(confidence * 100);
+            document.getElementById('confidenceFill').style.width = confidencePercent + '%';
+            document.getElementById('confidenceText').textContent = confidencePercent + '%';
+
+            // Update probabilities
+            const probabilitiesContainer = document.getElementById('probabilities');
+            probabilitiesContainer.innerHTML = '';
+
+            Object.entries(probabilities).forEach(([category, prob]) => {
+                const probItem = document.createElement('div');
+                probItem.className = 'prob-item';
+                probItem.innerHTML = `
+                    <div class="prob-category">${category}</div>
+                    <div class="prob-value">${Math.round(prob * 100)}%</div>
+                `;
+                probabilitiesContainer.appendChild(probItem);
+            });
+
+            // Show results
+            document.getElementById('results').style.display = 'block';
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        function showError(message) {
+            const errorElement = document.getElementById('error');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('error').style.display = 'none';
+        }
+
+        function hideResults() {
+            document.getElementById('results').style.display = 'none';
+        }
+
+        // Enable Enter key to submit
+        document.getElementById('emailText').addEventListener('keydown', function(event) {
+            if (event.ctrlKey && event.key === 'Enter') {
+                classifyEmail();
+            }
+        });
+    </script>
+</body>
+</html>
