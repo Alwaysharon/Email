@@ -47,7 +47,7 @@ After cleaning and filtering, the final dataset used for training & evaluation c
 3,744 e-mails
 
 6 balanced categories (each 624 samples):
-```text
+
 data/email_dataset.csv   # columns: email_text, category
 | Category   | Samples |
 | ---------- | ------- |
@@ -59,10 +59,12 @@ data/email_dataset.csv   # columns: email_text, category
 | IT         | 624     |
 
 The file format is:
+
 email_text,category
+
 "please review the quarterly budget report ...",Finance
+
 "system maintenance will be performed tonight ...",IT
-...
 
 ## 3. Methods
 ### 3.1 Pre-processing
@@ -143,6 +145,7 @@ SVM also performs strongly, outperforming Naive Bayes on all macro metrics.
 Naive Bayes is the simplest model but still reaches ~77% accuracy.
 
 ## 5. Project Structure
+```text
 email-classifier/
 ├─ app.py                     # Flask web application for online e-mail classification 
 ├─ train_model.py             # Data loading, preprocessing, model training & saving 
@@ -160,7 +163,7 @@ email-classifier/
 ├─ static/                    # (Optional) CSS/JS/Images for the web UI
 ├─ requirements.txt           # Python dependencies (or see setup_environment.py)
 └─ setup_environment.py       # Helper script to install packages & download NLTK data 
-
+```
 ### 6. Web Application
 
 The Flask app (app.py) exposes:
