@@ -39,7 +39,6 @@ I use `prep_enron_multi_cls.py` to:
 - `Legal`
 - `Operations` 
 
-The script streams the large CSV file in chunks and writes a compact training set:
 
 ### 2.3 Final Dataset Used in Experiments
 
@@ -65,8 +64,8 @@ email_text,category
 "system maintenance will be performed tonight ...",IT
 ...
 
-3. Methods
-3.1 Pre-processing
+##3. Methods
+###3.1 Pre-processing
 
 All e-mails undergo the following pre-processing steps (see train_model.py):
 
@@ -84,7 +83,7 @@ Dropping very short tokens (length ≤ 2).
 
 The cleaned text is stored in a processed_text column and used as model input.
 
-3.2 Feature Extraction
+###3.2 Feature Extraction
 
 TF-IDF vectorisation using TfidfVectorizer from scikit-learn:
 
@@ -96,7 +95,7 @@ min_df=2, max_df=0.95
 
 stop_words='english' (scikit-learn’s built-in list as backup).
 
-3.3 Models
+###3.3 Models
 
 Three classical machine learning classifiers are trained using a scikit-learn Pipeline:
 
@@ -114,8 +113,8 @@ stratify = category
 
 random_state = 42
 
-4. Evaluation Metrics & Results
-4.1 Metrics
+##4. Evaluation Metrics & Results
+###4.1 Metrics
 
 For each model I report:
 
@@ -131,7 +130,7 @@ Confusion matrix (saved as PNG for the best model)
 
 All metrics are computed using classification_report and confusion_matrix from scikit-learn.
 
-4.2 Overall Results (Test Set, 20%)
+###4.2 Overall Results (Test Set, 20%)
 | Model         | Accuracy   | Macro Precision | Macro Recall | Macro F1 |
 | ------------- | ---------- | --------------- | ------------ | -------- |
 | Naive Bayes   | 0.7677     | 0.78            | 0.77         | 0.77     |
@@ -143,7 +142,7 @@ SVM also performs strongly, outperforming Naive Bayes on all macro metrics.
 
 Naive Bayes is the simplest model but still reaches ~77% accuracy.
 
-5. Project Structure
+##5. Project Structure
 email-classifier/
 ├─ app.py                     # Flask web application for online e-mail classification 
 ├─ train_model.py             # Data loading, preprocessing, model training & saving 
@@ -162,7 +161,7 @@ email-classifier/
 ├─ requirements.txt           # Python dependencies (or see setup_environment.py)
 └─ setup_environment.py       # Helper script to install packages & download NLTK data 
 
-6. Web Application
+###6. Web Application
 
 The Flask app (app.py) exposes:
 
@@ -182,8 +181,8 @@ Applies the same text pre-processing as in training.
 
 Returns the predicted category and full probability distribution for each class.
 
-7. How to Run
-7.1 Requirements
+##7. How to Run
+###7.1 Requirements
 
 Python 3.8+
 
@@ -198,7 +197,7 @@ or run the helper script:
 
 python setup_environment.py
 
-7.2 Prepare the Dataset
+###7.2 Prepare the Dataset
 
 If you already have data/email_dataset.csv, you can skip this step.
 
@@ -213,7 +212,7 @@ python prep_enron_multi_cls.py --input data/emails.csv --output data/email_datas
 
 This will create a balanced multi-class dataset with weak labels.
 
-7.3 Train Models
+###7.3 Train Models
 python train_model.py
 
 
@@ -229,7 +228,7 @@ Evaluate them on a held-out test set
 
 Save the trained models to models/
 
-7.4 Start the Web Demo
+###7.4 Start the Web Demo
 python app.py
 
 
