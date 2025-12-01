@@ -40,7 +40,8 @@ I use `prep_enron_multi_cls.py` to:
 - `Operations` 
 
 The script streams the large CSV file in chunks and writes a compact training set:
-2.3 Final Dataset Used in Experiments
+
+### 2.3 Final Dataset Used in Experiments
 
 After cleaning and filtering, the final dataset used for training & evaluation contains:
 
